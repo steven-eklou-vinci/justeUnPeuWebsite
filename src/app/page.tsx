@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import ProductCard from '@/components/ProductCard';
+import CookieConsent from '@/components/CookieConsent';
 
 // Données des produits avec vraies images
 const featuredProducts = [
@@ -136,7 +137,7 @@ const HomePage = () => {
                   </svg>
                 </a>
                 <a 
-                  href="#"
+                  href="https://l.instagram.com/?u=https%3A%2F%2Fwww.tiktok.com%2F%40justeunpeu.be%3F_t%3DZG-90NofOAtm9A%26_r%3D1&e=AT3mxsPvfcue1QPA3fr-7Uyia7DMMyJQqbvvta61K6zJbqKRO5fNaiQ7LQuKW2Ib91bsluu-xFUcpQT12gskfB_6cbZDTv2lPyE88_p0i9R3wB05yjvL00efu4dECApSQLGHlkO65LoX"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-white transition-colors"
@@ -162,11 +163,21 @@ const HomePage = () => {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Juste Un Peu. Tous droits réservés.</p>
+          <div className="border-t border-gray-800 mt-8 pt-8">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+                <a href="/privacy" className="hover:text-white transition-colors">Politique de Confidentialité</a>
+                <a href="/cookies" className="hover:text-white transition-colors">Politique des Cookies</a>
+                <a href="/contact" className="hover:text-white transition-colors">Contact</a>
+              </div>
+              <p className="text-gray-400 text-center">&copy; 2025 Juste Un Peu. Tous droits réservés.</p>
+            </div>
           </div>
         </div>
       </footer>
+
+      {/* Cookie Consent Popup */}
+      <CookieConsent />
     </div>
   );
 };

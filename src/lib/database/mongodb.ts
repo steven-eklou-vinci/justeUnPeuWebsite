@@ -8,11 +8,26 @@ if (!process.env.MONGODB_URI) {
 }
 
 const uri = process.env.MONGODB_URI;
-const options = {
+
+// Configuration différente selon l'environnement
+const isAtlasConnection = uri.includes('mongodb+srv://');
+
+const options = isAtlasConnection ? {
+  // Configuration pour MongoDB Atlas
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 10000, // Augmenté pour Atlas
+  socketTimeoutMS: 0, // Pas de timeout pour Atlas
+  connectTimeoutMS: 10000,
+  maxIdleTimeMS: 30000,
+  retryWrites: true,
+  w: 'majority' as const,
+  // Pas besoin de spécifier TLS explicitement pour Atlas (automatique avec mongodb+srv://)
+} : {
+  // Configuration pour MongoDB local
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
-  family: 4
+  connectTimeoutMS: 10000
 };
 
 let client: MongoClient;
