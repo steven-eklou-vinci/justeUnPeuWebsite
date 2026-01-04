@@ -177,7 +177,10 @@ const CartPage = () => {
               </div>
 
               <div className="mt-6 space-y-3">
-                <button className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 transition-colors font-medium">
+                <button 
+                  onClick={() => router.push('/checkout')}
+                  className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 transition-colors font-medium"
+                >
                   Procéder au paiement
                 </button>
                 <button

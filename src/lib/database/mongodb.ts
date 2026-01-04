@@ -72,4 +72,9 @@ export async function connectToDatabase(): Promise<Db> {
   }
 }
 
+// Alias pour getDb
+export async function getDb(): Promise<Db> {
+  return connectToDatabase();
+}
+
 export { clientPromise };

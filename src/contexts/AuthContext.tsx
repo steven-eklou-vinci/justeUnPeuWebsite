@@ -5,3 +5,8 @@
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
+
+// Ré-exporter useAuth depuis le hook pour maintenir la compatibilité
+export { useAuth } from '@/hooks/useAuth';
+
+export default AuthProvider;

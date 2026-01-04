@@ -52,21 +52,11 @@ export default function NewAuthForm({ mode, onSuccess, onModeChange }: NewAuthFo
         const result = await register(validatedData);
         
         if (result.success) {
-          setMessage(result.message || 'Inscription réussie ! Vérifiez votre email.');
-          setFormData({
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: '',
-            address: {
-              street: '',
-              city: '',
-              postalCode: '',
-              country: 'France'
-            },
-            password: '',
-            confirmPassword: ''
-          });
+          setMessage('Inscription réussie ! Redirection vers la connexion...');
+          // Rediriger vers la page de login après 1.5 secondes
+          setTimeout(() => {
+            onModeChange?.('login');
+          }, 1500);
         } else {
           setErrors({ general: result.error || 'Erreur d\'inscription' });
         }

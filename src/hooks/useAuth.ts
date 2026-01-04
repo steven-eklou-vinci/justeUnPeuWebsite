@@ -43,6 +43,12 @@ interface UseAuthResult {
   resetPasswordLoading: boolean;
   verifyEmailLoading: boolean;
   profileLoading: boolean;
+  // Backwards-compatible aliases (legacy components expect { data, error } shape for signIn/signUp)
+  signIn: (email: string, password: string) => Promise<{ data: any | null; error: { message: string } | null }>;
+  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{ data: any | null; error: { message: string } | null }>;
+  signInWithProvider: (provider: string) => Promise<any>;
+  loading: boolean;
+  signOut: () => Promise<void>;
 }
 
 export function useAuth(): UseAuthResult {
@@ -367,26 +373,89 @@ export function useAuth(): UseAuthResult {
     user,
     isLoading,
     isAuthenticated: !!user,
-    
-    // Actions
+
+    // Actions (canonical)
     login,
     logout,
     register,
     forgotPassword,
     resetPassword,
     verifyEmail,
-    
+
     // Profile actions
     getProfile,
     updateProfile,
     changePassword,
-    
+
     // Loading states
     loginLoading,
     registerLoading,
     forgotPasswordLoading,
     resetPasswordLoading,
     verifyEmailLoading,
-    profileLoading
+    profileLoading,
+
+    // Backwards-compatible aliases expected elsewhere in the codebase
+      // legacy-style signUp/signIn used by UI components — map to API endpoints and return { data, error }
+      signUp: async (email: string, password: string, firstName?: string, lastName?: string) => {
+        try {
+          const payload = {
+            firstName: firstName || '',
+            lastName: lastName || '',
+            email,
+            phone: '00000000',
+            address: { street: 'N/A', city: 'N/A', postalCode: '0000', country: 'N/A' },
+            password,
+            confirmPassword: password
+          } as any;
+
+          const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+          if (!response.ok) {
+            return { data: null, error: { message: result.error || 'Erreur lors de l\'inscription' } };
+          }
+
+          // On success the API returns the created user
+          return { data: result.user ?? null, error: null };
+        } catch (err) {
+          return { data: null, error: { message: 'Erreur réseau' } };
+        }
+      },
+      signIn: async (email: string, password: string) => {
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          const result = await response.json();
+          if (!response.ok) {
+            return { data: null, error: { message: result.error || 'Erreur lors de la connexion' } };
+          }
+
+          // Update local user state
+          if (result.user) setUser(result.user);
+
+          return { data: result.user ?? null, error: null };
+        } catch (err) {
+          return { data: null, error: { message: 'Erreur réseau' } };
+        }
+      },
+      signInWithProvider: async (provider: string) => {
+        logger.info({ provider }, 'signInWithProvider fallback called');
+        return { success: false, error: 'Provider sign-in non implémenté' } as any;
+      },
+      loading: isLoading,
+      signOut: logout
   };
+
 }
+
+// Backwards-compatible aliases expected by some components
+export type UseAuthReturn = ReturnType<typeof useAuth>;

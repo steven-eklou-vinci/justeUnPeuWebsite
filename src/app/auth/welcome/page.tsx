@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -99,7 +100,7 @@ const WelcomePage: React.FC = () => {
           </h1>
           
           <p className="text-xl text-gray-700 mb-4">
-            {user.user_metadata?.first_name || 'Cher client'}
+            {user.firstName || 'Cher client'}
           </p>
         </div>
 
@@ -118,9 +119,9 @@ const WelcomePage: React.FC = () => {
           <div className="text-center text-sm text-gray-500 border-t pt-4">
             <p className="mb-2">Votre compte :</p>
             <p className="font-medium text-gray-700">{user.email}</p>
-            {user.user_metadata?.first_name && (
+            {(user.firstName || user.lastName) && (
               <p className="text-gray-600">
-                {user.user_metadata.first_name} {user.user_metadata.last_name}
+                {user.firstName} {user.lastName}
               </p>
             )}
           </div>

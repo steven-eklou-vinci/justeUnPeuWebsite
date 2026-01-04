@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
+import Toast from '@/components/Toast';
 import { useParams, useRouter } from 'next/navigation';
 import { getProductById } from '@/data/products';
 import { useAuth } from '@/hooks/useAuth';
@@ -16,6 +17,8 @@ const ProductDetailPage: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const product = getProductById(productId);
   const { isAuthenticated } = useAuth();
@@ -39,7 +42,8 @@ const ProductDetailPage: React.FC = () => {
 
     // Si connecté mais pas de taille sélectionnée, demander de sélectionner une taille
     if (!selectedSize) {
-      alert('Veuillez sélectionner une taille');
+      setToastMessage('Veuillez sélectionner une taille');
+      setShowToast(true);
       return;
     }
 
@@ -54,8 +58,9 @@ const ProductDetailPage: React.FC = () => {
       });
     }
 
-    // Feedback visuel (optionnel)
-    alert(`${quantity} article(s) ajouté(s) au panier !`);
+    // Feedback visuel
+    setToastMessage(`${quantity} article(s) ajouté(s) au panier !`);
+    setShowToast(true);
   };
 
   if (!product) {
@@ -271,6 +276,13 @@ const ProductDetailPage: React.FC = () => {
           </p>
         </div>
       </footer>
+
+      {/* Toast notification */}
+      <Toast
+        message={toastMessage}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };

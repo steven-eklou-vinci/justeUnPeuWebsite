@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   description: "Découvrez notre collection de vêtements modernes et élégants",
 };
 
+// Force dynamic rendering for the app to avoid static prerender errors
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
   children,
 }: {
