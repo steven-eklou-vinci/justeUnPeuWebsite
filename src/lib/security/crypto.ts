@@ -1,33 +1,18 @@
-import * as argon2 from 'argon2';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { logger } from '../logger';
 
 /**
- * Hash a password using Argon2id (with bcrypt fallback)
+ * Hash a password using bcryptjs
  */
 export async function hashPassword(password: string): Promise<string> {
   try {
-    // Try Argon2 first
-    const hash = await argon2.hash(password, {
-      type: argon2.argon2id,
-      memoryCost: 2 ** 16, // 64 MB
-      timeCost: 3,
-      parallelism: 1,
-    });
+    const saltRounds = 12;
+    const hash = await bcrypt.hash(password, saltRounds);
     return hash;
   } catch (error) {
-    logger.warn({ error }, 'Argon2 hashing failed, falling back to bcrypt');
-    
-    try {
-      // Fallback to bcrypt
-      const saltRounds = 12;
-      const hash = await bcrypt.hash(password, saltRounds);
-      return hash;
-    } catch (fallbackError) {
-      logger.error({ error: fallbackError }, 'Password hashing completely failed');
-      throw new Error('Password hashing failed');
-    }
+    logger.error({ error }, 'Password hashing failed');
+    throw new Error('Password hashing failed');
   }
 }
 
@@ -39,13 +24,7 @@ export async function verifyPassword(
   hash: string
 ): Promise<boolean> {
   try {
-    // Try Argon2 first (hashes start with $argon2)
-    if (hash.startsWith('$argon2')) {
-      return await argon2.verify(hash, password);
-    } else {
-      // Fallback to bcrypt
-      return await bcrypt.compare(password, hash);
-    }
+    return await bcrypt.compare(password, hash);
   } catch (error) {
     logger.error({ error }, 'Password verification failed');
     return false;
